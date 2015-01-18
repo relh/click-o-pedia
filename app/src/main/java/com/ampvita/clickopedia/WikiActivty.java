@@ -1,11 +1,15 @@
 package com.ampvita.clickopedia;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -19,6 +23,7 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
     private static final int CLICK_ON_WEBVIEW = 1;
     private static final int CLICK_ON_URL = 2;
 
+    private Context context = this;
     private final Handler handler = new Handler(this);
 
     private TextView scoreView;
@@ -37,6 +42,7 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
         score = -1;
         scoreView = (TextView) findViewById(R.id.score_view);
         webView = (WebView) findViewById(R.id.web_view);
+        webView.getSettings().setJavaScriptEnabled(true);
         webView.setOnTouchListener(this);
 
         client = new WebViewClient(){
@@ -44,6 +50,14 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
                 lastUrl = url;
                 handler.sendEmptyMessage(CLICK_ON_URL);
                 return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url)
+            {
+                webView.loadUrl("javascript:(function() { " +
+                        "var elements = document.getElementsByClassName('header'); " +
+                        "elements[0].style.display= 'none'; })()");
             }
         };
 
@@ -67,17 +81,16 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
     @Override
     public boolean handleMessage(Message msg) {
         if (msg.what == CLICK_ON_URL) {
+            scoreView.setText("Clicks so far: " + score); //update number of clicks
             handler.removeMessages(CLICK_ON_WEBVIEW); //remove normal screen clicks
 
-            Toast.makeText(this, "Url " + lastUrl, Toast.LENGTH_SHORT).show(); //display url
+            //Toast.makeText(this, "Url " + lastUrl, Toast.LENGTH_SHORT).show(); //display url
 
             //check for webpage being a wikipage
             if (lastUrl.toLowerCase().contains("wikipedia")) {
                 score++;
                 webView.loadUrl(lastUrl); //load webpage
             }
-
-            scoreView.setText("Clicks so far: " + score); //update number of clicks
             return true;
         }
         if (msg.what == CLICK_ON_WEBVIEW) {
