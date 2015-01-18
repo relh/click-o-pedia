@@ -19,6 +19,9 @@ public class WikiActivty extends Activity {
         mWebView.setWebViewClient(new CustomWebView());
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.loadUrl("http://www.wikipedia.org");
+
+        http://en.wikipedia.org/wiki/User:West.andrew.g/Popular_pages
+
     }
 
 }

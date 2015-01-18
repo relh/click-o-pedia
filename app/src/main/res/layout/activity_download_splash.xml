@@ -5,8 +5,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".WikiActivty">
 
-    <WebView
-        android:id="@+id/wiki_view"
+    <ImageView
+        android:id="@+id/splash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
