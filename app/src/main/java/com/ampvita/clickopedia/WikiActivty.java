@@ -1,39 +1,24 @@
 package com.ampvita.clickopedia;
 
-import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.webkit.WebView;
 
 
-public class WikiActivty extends ActionBarActivity {
+public class WikiActivty extends Activity {
+
+    WebView mWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_wiki_activty);
+         mWebView = (WebView) findViewById(R.id.wiki_view);
+        // add the following line ----------
+        mWebView.setWebViewClient(new CustomWebView());
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.loadUrl("http://www.wikipedia.org");
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_wiki_activty, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
 }
