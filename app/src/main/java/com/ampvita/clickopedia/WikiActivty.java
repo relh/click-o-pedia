@@ -2,6 +2,7 @@ package com.ampvita.clickopedia;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +11,11 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.util.Random;
 
@@ -29,6 +35,8 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
     private WebViewClient client;
 
     String lastUrl;
+
+    String finish;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +59,12 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
             @Override
             public void onPageFinished(WebView view, String url)
             {
+                if (url.equals(finish)) {
+                    Intent transition = new Intent(WikiActivty.this, EndingActivity.class);
+                    transition.putExtra("score", score);
+                    transition.putExtra("winner", true);
+                    startActivity(transition);
+                }
                 webView.loadUrl("javascript:(function() { " +
                         "var elements = document.getElementsByClassName('header'); " +
                         "elements[0].style.display= 'none'; " +
@@ -78,6 +92,25 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
         webView.setVerticalScrollBarEnabled(false);
 
         String start = getIntent().getStringExtra("start");
+        finish = getIntent().getStringExtra("finish");
+
+        Firebase mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
+        mfr.child(finish).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!(dataSnapshot.getKey().equals(finish))) {
+                    return;
+                }
+                Intent transition = new Intent(WikiActivty.this, EndingActivity.class);
+                transition.putExtra("score", score);
+                transition.putExtra("theirScore", dataSnapshot.getValue().toString());
+                transition.putExtra("winner", false);
+                startActivity(transition);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) { }
+        });
 
         System.out.println("http://www.en.wikipedia.org/wiki" + start);
         webView.loadUrl("http://www.en.wikipedia.org/wiki" + start);

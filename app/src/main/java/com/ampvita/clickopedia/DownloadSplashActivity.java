@@ -34,11 +34,30 @@ public class DownloadSplashActivity extends Activity {
     boolean host = false;
 
     ValueEventListener FirebaseListener = new ValueEventListener() {
+
+        public void joinerSaveAndZero(DataSnapshot snapshot) {
+            if (snapshot.getKey().equals("start")) {
+                start = snapshot.getValue().toString();
+                openGame++;
+                onOpenGameChange();
+                mfr.child("start").removeEventListener(this);
+                mfr.child("start").removeValue();
+            } else {
+                finish = snapshot.getValue().toString();
+                openGame++;
+                onOpenGameChange();
+                mfr.child("finish").removeEventListener(this);
+                mfr.child("finish").removeValue();
+            }
+        }
+
         @Override
         public void onDataChange(DataSnapshot snapshot) { //unsure, host, joiner?
             System.out.println(snapshot.getKey());
             System.out.println(snapshot.getValue());
-
+            if (!(snapshot.getKey().equals("start") || snapshot.getKey().equals("finish"))) {
+                return;
+            }
             if (unsure) {
                 unsure = false;
                 if (snapshot.getValue() == null) {
@@ -53,70 +72,20 @@ public class DownloadSplashActivity extends Activity {
                     mfr.child("finish").setValue(finish); // means we are host
                 } else { // if we're not the host, this is all we have to do
                     host = false;
-
-                    if (snapshot.getKey().equals("start")) {
-                        start = snapshot.getValue().toString();
-                        openGame++;
-                        onOpenGameChange();
-                        mfr.child("start").removeEventListener(this);
-                        mfr.child("start").removeValue();
-                    } else {
-                        finish = snapshot.getValue().toString();
-                        openGame++;
-                        onOpenGameChange();
-                        mfr.child("finish").removeEventListener(this);
-                        mfr.child("finish").removeValue();
-                    }
+                    joinerSaveAndZero(snapshot);
                 }
             } else { // either we're hosting, have set the values, and are waiting OR we are a joiner and have got one value and need the other
                 if (host) {
-                    
+                    System.out.println("host looking for null: " + snapshot.getKey());
+                    System.out.println("host looking for null: " + snapshot.getValue());
+                    if (snapshot.getValue() == null) { // should be null because joiner zeroed it
+                        openGame++;
+                        onOpenGameChange();
+                    }
                 } else {
-
-                }
-            }
-
-            if (snapshot.getKey().equals("start")) {
-                if (firstStart) { // first value
-                    firstStart = false;
-                    if (snapshot.getValue() != null) { // chance for open game to exist
-                        start = snapshot.getValue().toString();
-                        openGame++;
-                        onOpenGameChange();
-                        mfr.child("start").removeEventListener(this);
-                    } else {
-                        int idx = r.nextInt(ClickopediaApplication.top5000.length); // if starting null value, we will host
-                        start = (ClickopediaApplication.top5000[idx]);
-                        mfr.child("start").setValue(start); // means we are host
-                    }
-                } else { // been here before, now waiting for other player
-                    start = snapshot.getValue().toString();
-                    if (start != null) { // we found a game!
-                        openGame++;
-                        onOpenGameChange();
-                        mfr.child("start").removeEventListener(this);
-                    }
-                }
-            } else { // is finish
-                if (firstFinish) { // first value
-                    firstFinish = false;
-                    if (snapshot.getValue() != null) { // chance for open game to exist
-                        finish = snapshot.getValue().toString();
-                        openGame++;
-                        onOpenGameChange();
-                        mfr.child("finish").removeEventListener(this);
-                    } else {
-                        int idx = r.nextInt(ClickopediaApplication.top5000.length); // if starting null value, we will host
-                        finish = (ClickopediaApplication.top5000[idx]);
-                        mfr.child("finish").setValue(finish);
-                    }
-                } else { // been here before, now waiting for other player
-                    finish = snapshot.getValue().toString();
-                    if (finish != null) { // we found a game!
-                        openGame++;
-                        onOpenGameChange();
-                        mfr.child("finish").removeEventListener(this);
-                    }
+                    System.out.println("joiner looking for other val: " + snapshot.getKey());
+                    System.out.println("joiner looking for other val: " + snapshot.getValue());
+                    joinerSaveAndZero(snapshot);
                 }
             }
         }
@@ -129,6 +98,7 @@ public class DownloadSplashActivity extends Activity {
     protected void onOpenGameChange() {
         System.out.println(openGame);
         if (openGame == 2) { // Got both a start and finish ideally
+            mfr.child(finish).addValueEventListener(FirebaseListener);
             progress();
         }
     }
