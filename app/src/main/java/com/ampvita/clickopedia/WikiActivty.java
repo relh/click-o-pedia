@@ -5,15 +5,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Random;
 
@@ -57,18 +53,35 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
             {
                 webView.loadUrl("javascript:(function() { " +
                         "var elements = document.getElementsByClassName('header'); " +
-                        "elements[0].style.display= 'none'; })()");
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementsByClassName('hlist'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementsByClassName('watch-this-article'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementsByClassName('icon-edit-enabled'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementsByClassName('reference'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementsByClassName('reflist'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementsByClassName('last-modified-bar'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementById('page-secondary-actions'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "var elements = document.getElementsByClassName('footer'); " +
+                        "elements[0].style.display= 'none'; " +
+                        "})()");
             }
         };
 
         webView.setWebViewClient(client);
         webView.setVerticalScrollBarEnabled(false);
 
-        //start you on a random page
-        int idx = new Random().nextInt(ClickopediaApplication.top5000.length);
-        String random = (ClickopediaApplication.top5000[idx]);
-        webView.loadUrl("http://www.en.wikipedia.org/wiki" + random);
-    }
+        String start = getIntent().getStringExtra("start");
+
+        System.out.println("http://www.en.wikipedia.org/wiki" + start);
+        webView.loadUrl("http://www.en.wikipedia.org/wiki" + start);
+    } //https://torid-heat-2250.firebaseio.com/#-Jfwrmwo4Ri96iuFF6KO|b68b468e76632928959f64f2772ba463
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {

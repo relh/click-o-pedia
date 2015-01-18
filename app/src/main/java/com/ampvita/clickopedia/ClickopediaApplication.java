@@ -2,13 +2,19 @@ package com.ampvita.clickopedia;
 
 import android.app.Application;
 
+import com.firebase.client.Firebase;
+
 public class ClickopediaApplication extends Application {
 
     public static String[] top5000;
+    public static Firebase myFirebaseRef;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Firebase.setAndroidContext(this);
+
+        myFirebaseRef = new Firebase("https://torid-heat-2250.firebaseio.com/");
 
         top5000 = new String[]{"/Main_Page",
                 "/Malware",
