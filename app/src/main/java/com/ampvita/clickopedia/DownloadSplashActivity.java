@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.firebase.client.ChildEventListener;
@@ -16,12 +18,8 @@ import java.util.Random;
 
 
 public class DownloadSplashActivity extends Activity {
-
     Firebase mfr;
     ImageView splash;
-
-    boolean firstStart = true;
-    boolean firstFinish = true;
 
     int openGame = 0;
 
@@ -107,15 +105,23 @@ public class DownloadSplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_splash);
+
+        r = new Random();
+        mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
+
         splash = (ImageView) findViewById(R.id.splash);
         splash.setImageResource(R.drawable.wikipedia_splash);
 
-        r = new Random();
+        final Button start = (Button) findViewById(R.id.start);
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mfr.child("start").addValueEventListener(FirebaseListener);
+                mfr.child("finish").addValueEventListener(FirebaseListener);
 
-        mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
-
-        mfr.child("start").addValueEventListener(FirebaseListener);
-        mfr.child("finish").addValueEventListener(FirebaseListener);
+                start.setText("Waiting...");
+            }
+        });
     }
 
     protected void progress() {

@@ -13,7 +13,14 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"/>
     <TextView
-        android:text="Welcome to Clickopedia!"
+        android:text="gstrings/intro"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"/>
+
+    <Button
+        android:id="@+id/start"
+        android:text="strings/start"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"/>
