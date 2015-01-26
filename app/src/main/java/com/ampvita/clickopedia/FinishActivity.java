@@ -2,23 +2,21 @@ package com.ampvita.clickopedia;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 
-public class EndingActivity extends ActionBarActivity {
+public class FinishActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ending);
+        setContentView(R.layout.activity_finish);
 
         int score = getIntent().getIntExtra("score", 0);
         Boolean winner = getIntent().getBooleanExtra("winner", false);
 
-        ImageView splash = (ImageView) findViewById(R.id.splash);
+        ImageView splash = (ImageView) findViewById(R.id.splashEnd);
         splash.setImageResource(R.drawable.wikipedia_splash);
 
         TextView myClicks = (TextView) findViewById(R.id.myClicks);

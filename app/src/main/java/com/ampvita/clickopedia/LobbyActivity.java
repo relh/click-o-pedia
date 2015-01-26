@@ -3,12 +3,10 @@ package com.ampvita.clickopedia;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
@@ -17,7 +15,7 @@ import com.firebase.client.ValueEventListener;
 import java.util.Random;
 
 
-public class DownloadSplashActivity extends Activity {
+public class LobbyActivity extends Activity {
     Firebase mfr;
     ImageView splash;
 
@@ -38,13 +36,13 @@ public class DownloadSplashActivity extends Activity {
                 start = snapshot.getValue().toString();
                 openGame++;
                 onOpenGameChange();
-                mfr.child("start").removeEventListener(this);
+                mfr.child("start").removeEventListener(FirebaseListener);
                 mfr.child("start").removeValue();
             } else {
                 finish = snapshot.getValue().toString();
                 openGame++;
                 onOpenGameChange();
-                mfr.child("finish").removeEventListener(this);
+                mfr.child("finish").removeEventListener(FirebaseListener);
                 mfr.child("finish").removeValue();
             }
         }
@@ -54,13 +52,12 @@ public class DownloadSplashActivity extends Activity {
             System.out.println(snapshot.getKey());
             System.out.println(snapshot.getValue());
             if (!(snapshot.getKey().equals("start") || snapshot.getKey().equals("finish"))) {
+                System.out.println("HOW DID THIS HAPPEN: " + snapshot.getKey() + " " + snapshot.getValue());
                 return;
             }
             if (unsure) {
                 unsure = false;
-                if (snapshot.getValue() == null) {
-                    host = true;
-
+                if (snapshot.getValue() == null) { host = true;
                     int idx = r.nextInt(ClickopediaApplication.top5000.length); // if starting null value, we will host
                     start = (ClickopediaApplication.top5000[idx]);
                     mfr.child("start").setValue(start); // means we are host
@@ -104,7 +101,7 @@ public class DownloadSplashActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_download_splash);
+        setContentView(R.layout.activity_lobby);
 
         r = new Random();
         mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
@@ -125,7 +122,7 @@ public class DownloadSplashActivity extends Activity {
     }
 
     protected void progress() {
-        Intent transition = new Intent(DownloadSplashActivity.this, WikiActivty.class);
+        Intent transition = new Intent(LobbyActivity.this, GameActivity.class);
         transition.putExtra("start", start);
         transition.putExtra("finish", finish);
         startActivity(transition);

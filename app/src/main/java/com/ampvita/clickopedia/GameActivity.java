@@ -17,18 +17,15 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-import java.util.Random;
 
-
-public class WikiActivty extends Activity implements View.OnTouchListener, Handler.Callback {
+public class GameActivity extends Activity implements View.OnTouchListener, Handler.Callback {
 
     private static final int CLICK_ON_WEBVIEW = 1;
     private static final int CLICK_ON_URL = 2;
 
-    private Context context = this;
     private final Handler handler = new Handler(this);
 
-    private TextView scoreView;
+    private TextView clickView;
     private int score;
 
     private WebView webView;
@@ -38,16 +35,49 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
 
     String finish;
 
+    ValueEventListener mListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_wiki_activty);
+        setContentView(R.layout.activity_game);
 
         score = -1;
-        scoreView = (TextView) findViewById(R.id.score_view);
+        clickView = (TextView) findViewById(R.id.score_view);
+
+        final String start = getIntent().getStringExtra("start");
+        finish = getIntent().getStringExtra("finish");
+
+        TextView startingSite = (TextView) findViewById(R.id.starting);
+        startingSite.setText("Starting page: " + start);
+
+        TextView finishingSite = (TextView) findViewById(R.id.finishing);
+        finishingSite.setText("Finishing page: " + finish);
+
         webView = (WebView) findViewById(R.id.web_view);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setOnTouchListener(this);
+
+        final Firebase mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
+        // can't remove old value event listeners
+        // maybe they aren't just added to the children
+        mfr.child(finish).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) { //TODO: this does not successfully move the loser to the end page
+                if (!(snapshot.getKey().equals(finish))) {
+                    System.out.println("HOW DID THIS HAPPEN: " + snapshot.getKey() + " " + snapshot.getValue());
+                    return;
+                }
+                Intent transition = new Intent(GameActivity.this, FinishActivity.class);
+                transition.putExtra("score", score);
+                transition.putExtra("theirScore", snapshot.getValue().toString());
+                transition.putExtra("winner", false);
+                startActivity(transition);
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) { }
+        });
 
         client = new WebViewClient(){
             @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -59,8 +89,13 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
             @Override
             public void onPageFinished(WebView view, String url)
             {
-                if (url.equals(finish)) {
-                    Intent transition = new Intent(WikiActivty.this, EndingActivity.class);
+                String[] urlParts = url.split("/");
+                //System.out.println("url on page finished: " + urlParts[urlParts.length-1]);
+                //System.out.println("finish string: " + finish);
+
+                if (urlParts[urlParts.length-1].equals(finish.substring(1))) {
+                    Intent transition = new Intent(GameActivity.this, FinishActivity.class);
+                    mfr.child(finish).setValue(score); // means we are host
                     transition.putExtra("score", score);
                     transition.putExtra("winner", true);
                     startActivity(transition);
@@ -91,27 +126,6 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
         webView.setWebViewClient(client);
         webView.setVerticalScrollBarEnabled(false);
 
-        String start = getIntent().getStringExtra("start");
-        finish = getIntent().getStringExtra("finish");
-
-        Firebase mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
-        mfr.child(finish).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!(dataSnapshot.getKey().equals(finish))) {
-                    return;
-                }
-                Intent transition = new Intent(WikiActivty.this, EndingActivity.class);
-                transition.putExtra("score", score);
-                transition.putExtra("theirScore", dataSnapshot.getValue().toString());
-                transition.putExtra("winner", false);
-                startActivity(transition);
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) { }
-        });
-
         System.out.println("http://www.en.wikipedia.org/wiki" + start);
         webView.loadUrl("http://www.en.wikipedia.org/wiki" + start);
     } //https://torid-heat-2250.firebaseio.com/#-Jfwrmwo4Ri96iuFF6KO|b68b468e76632928959f64f2772ba463
@@ -127,9 +141,8 @@ public class WikiActivty extends Activity implements View.OnTouchListener, Handl
     @Override
     public boolean handleMessage(Message msg) {
         if (msg.what == CLICK_ON_URL) {
-            scoreView.setText("Clicks so far: " + score); //update number of clicks
+            clickView.setText("Clicks so far: " + score); //update number of clicks
             handler.removeMessages(CLICK_ON_WEBVIEW); //remove normal screen clicks
-
             //Toast.makeText(this, "Url " + lastUrl, Toast.LENGTH_SHORT).show(); //display url
 
             //check for webpage being a wikipage

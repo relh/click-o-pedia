@@ -3,7 +3,7 @@
 
     <string name="app_name">Clickopedia</string>
     <string name="intro">Clickopedia lets you race a friend through wikipedia</string>
-    <string name="start">Have you and a friend both click me at the same time</string>
+    <string name="start">Click me to look for a challenger</string>
     <string name="title_activity_ending">EndingActivity</string>
 
 </resources>
