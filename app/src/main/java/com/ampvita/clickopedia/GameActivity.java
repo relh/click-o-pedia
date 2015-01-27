@@ -64,8 +64,11 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
         mfr.child(finish).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) { //TODO: this does not successfully move the loser to the end page
+                System.out.println(snapshot.getKey());
+                System.out.println(finish);
+
                 if (!(snapshot.getKey().equals(finish))) {
-                    System.out.println("HOW DID THIS HAPPEN: " + snapshot.getKey() + " " + snapshot.getValue());
+                    System.out.println("HOW DID THIS HAPPEN22: " + snapshot.getKey() + " " + snapshot.getValue());
                     return;
                 }
                 Intent transition = new Intent(GameActivity.this, FinishActivity.class);
@@ -126,8 +129,8 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
         webView.setWebViewClient(client);
         webView.setVerticalScrollBarEnabled(false);
 
-        System.out.println("http://www.en.wikipedia.org/wiki" + start);
-        webView.loadUrl("http://www.en.wikipedia.org/wiki" + start);
+        System.out.println("url starting place http://www.en.wikipedia.org/wiki/" + start);
+        webView.loadUrl("http://www.en.wikipedia.org/wiki/" + start);
     } //https://torid-heat-2250.firebaseio.com/#-Jfwrmwo4Ri96iuFF6KO|b68b468e76632928959f64f2772ba463
 
     @Override

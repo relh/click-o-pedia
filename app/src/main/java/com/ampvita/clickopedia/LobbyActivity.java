@@ -52,7 +52,7 @@ public class LobbyActivity extends Activity {
             System.out.println(snapshot.getKey());
             System.out.println(snapshot.getValue());
             if (!(snapshot.getKey().equals("start") || snapshot.getKey().equals("finish"))) {
-                System.out.println("HOW DID THIS HAPPEN: " + snapshot.getKey() + " " + snapshot.getValue());
+                System.out.println("HOW DID THIS HAPPEN11: " + snapshot.getKey() + " " + snapshot.getValue());
                 return;
             }
             if (unsure) {
@@ -71,15 +71,13 @@ public class LobbyActivity extends Activity {
                 }
             } else { // either we're hosting, have set the values, and are waiting OR we are a joiner and have got one value and need the other
                 if (host) {
-                    System.out.println("host looking for null: " + snapshot.getKey());
-                    System.out.println("host looking for null: " + snapshot.getValue());
+                    System.out.println("host looking for null: " + snapshot.getKey() + " " + snapshot.getValue());
                     if (snapshot.getValue() == null) { // should be null because joiner zeroed it
                         openGame++;
                         onOpenGameChange();
                     }
                 } else {
-                    System.out.println("joiner looking for other val: " + snapshot.getKey());
-                    System.out.println("joiner looking for other val: " + snapshot.getValue());
+                    System.out.println("joiner looking for other val: " + snapshot.getKey() + " " + snapshot.getValue());
                     joinerSaveAndZero(snapshot);
                 }
             }
