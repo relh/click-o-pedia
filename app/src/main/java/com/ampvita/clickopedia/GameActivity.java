@@ -62,13 +62,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
         mfr.child(finish).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) { //TODO: this does not successfully move the loser to the end page
-                System.out.println("GAME " + snapshot.getKey());
-                System.out.println("GAME " + finish);
-
-                if (!(snapshot.getKey().equals(finish))) {
-                    System.out.println("HOW DID THIS HAPPEN22: " + snapshot.getKey() + " " + snapshot.getValue());
-                    return;
-                }
+                if (snapshot.getValue() == null) { return; }
                 Intent transition = new Intent(GameActivity.this, FinishActivity.class);
                 transition.putExtra("score", score);
                 transition.putExtra("theirScore", snapshot.getValue().toString());

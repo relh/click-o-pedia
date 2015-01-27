@@ -49,12 +49,6 @@ public class LobbyActivity extends Activity {
 
         @Override
         public void onDataChange(DataSnapshot snapshot) { //unsure, host, joiner?
-            System.out.println(snapshot.getKey());
-            System.out.println(snapshot.getValue());
-            if (!(snapshot.getKey().equals("start") || snapshot.getKey().equals("finish"))) {
-                System.out.println("HOW DID THIS HAPPEN11: " + snapshot.getKey() + " " + snapshot.getValue());
-                return;
-            }
             if (unsure) {
                 unsure = false;
                 if (snapshot.getValue() == null) { host = true;
@@ -91,7 +85,6 @@ public class LobbyActivity extends Activity {
     protected void onOpenGameChange() {
         System.out.println(openGame);
         if (openGame == 2) { // Got both a start and finish ideally
-            mfr.child(finish).addValueEventListener(FirebaseListener);
             progress();
         }
     }
