@@ -25,4 +25,10 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"/>
 
+    <Button
+        android:id="@+id/restart"
+        android:text="@string/restart"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1" />
 </LinearLayout>

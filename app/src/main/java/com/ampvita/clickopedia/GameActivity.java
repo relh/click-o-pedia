@@ -1,7 +1,6 @@
 package com.ampvita.clickopedia;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,8 +31,9 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
     private WebViewClient client;
 
     String lastUrl;
-
     String finish;
+
+    boolean winner = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,20 +59,23 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
         final Firebase mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
         // can't remove old value event listeners
         // maybe they aren't just added to the children
-        mfr.child(finish).addValueEventListener(new ValueEventListener() {
+        final ValueEventListener FinishListener = new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) { //TODO: this does not successfully move the loser to the end page
+            public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.getValue() == null) { return; }
+                if (winner) { mfr.child(finish).removeValue(); }
                 Intent transition = new Intent(GameActivity.this, FinishActivity.class);
                 transition.putExtra("score", score);
-                transition.putExtra("theirScore", snapshot.getValue().toString());
-                transition.putExtra("winner", false);
+                transition.putExtra("otherScore", snapshot.getValue().toString());
+                transition.putExtra("winner", winner);
                 startActivity(transition);
             }
 
             @Override
             public void onCancelled(FirebaseError firebaseError) { }
-        });
+        };
+
+        mfr.child(finish).addValueEventListener(FinishListener);
 
         client = new WebViewClient(){
             @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -88,13 +91,9 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
                 System.out.println("url on page finished: " + urlParts[urlParts.length-1]);
                 System.out.println("finish string: " + finish);
 
-                if (urlParts[urlParts.length-1].equals(finish.substring(1))) {
-                    System.out.println("IN FINISH");
-                    Intent transition = new Intent(GameActivity.this, FinishActivity.class);
+                if (urlParts[urlParts.length-1].equals(finish)) {
+                    winner = true;
                     mfr.child(finish).setValue(score); // means we are host
-                    transition.putExtra("score", score);
-                    transition.putExtra("winner", true);
-                    startActivity(transition);
                 }
                 webView.loadUrl("javascript:(function() { " +
                         "var elements = document.getElementsByClassName('header'); " +
