@@ -6,7 +6,7 @@ import com.firebase.client.Firebase;
 
 public class ClickopediaApplication extends Application {
 
-    public static String[] top5000;
+    public static String[] top1000;
     public static Firebase myFirebaseRef;
 
     @Override
@@ -16,7 +16,7 @@ public class ClickopediaApplication extends Application {
 
         myFirebaseRef = new Firebase("https://torid-heat-2250.firebaseio.com/");
 
-        top5000 = new String[]{"Wiki",
+        top1000 = new String[]{"Wiki",
                 "Facebook",
                 "YouTube",
                 "Searching",

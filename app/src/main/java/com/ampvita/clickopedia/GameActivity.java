@@ -35,8 +35,6 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
 
     String finish;
 
-    ValueEventListener mListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +62,8 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
         mfr.child(finish).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) { //TODO: this does not successfully move the loser to the end page
-                System.out.println(snapshot.getKey());
-                System.out.println(finish);
+                System.out.println("GAME " + snapshot.getKey());
+                System.out.println("GAME " + finish);
 
                 if (!(snapshot.getKey().equals(finish))) {
                     System.out.println("HOW DID THIS HAPPEN22: " + snapshot.getKey() + " " + snapshot.getValue());
@@ -93,10 +91,11 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
             public void onPageFinished(WebView view, String url)
             {
                 String[] urlParts = url.split("/");
-                //System.out.println("url on page finished: " + urlParts[urlParts.length-1]);
-                //System.out.println("finish string: " + finish);
+                System.out.println("url on page finished: " + urlParts[urlParts.length-1]);
+                System.out.println("finish string: " + finish);
 
                 if (urlParts[urlParts.length-1].equals(finish.substring(1))) {
+                    System.out.println("IN FINISH");
                     Intent transition = new Intent(GameActivity.this, FinishActivity.class);
                     mfr.child(finish).setValue(score); // means we are host
                     transition.putExtra("score", score);
@@ -171,5 +170,5 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
 //int clicks = prefs.getInt("clicks", 0) + 1; // add one to your clicks score
 //prefs.edit().putInt("clicks", clicks);
 
-//HashSet<String> hardCoded = (HashSet) prefs.getStringSet("top5000", new HashSet<String>());
+//HashSet<String> hardCoded = (HashSet) prefs.getStringSet("top1000", new HashSet<String>());
 //System.out.println(hardCoded.toString());

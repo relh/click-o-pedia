@@ -36,13 +36,13 @@ public class LobbyActivity extends Activity {
                 start = snapshot.getValue().toString();
                 openGame++;
                 onOpenGameChange();
-                mfr.child("start").removeEventListener(FirebaseListener);
+                mfr.child("start").removeEventListener(FirebaseListener); // might be broken
                 mfr.child("start").removeValue();
             } else {
                 finish = snapshot.getValue().toString();
                 openGame++;
                 onOpenGameChange();
-                mfr.child("finish").removeEventListener(FirebaseListener);
+                mfr.child("finish").removeEventListener(FirebaseListener); // might be broken
                 mfr.child("finish").removeValue();
             }
         }
@@ -58,12 +58,12 @@ public class LobbyActivity extends Activity {
             if (unsure) {
                 unsure = false;
                 if (snapshot.getValue() == null) { host = true;
-                    int idx = r.nextInt(ClickopediaApplication.top5000.length); // if starting null value, we will host
-                    start = (ClickopediaApplication.top5000[idx]);
+                    int idx = r.nextInt(ClickopediaApplication.top1000.length); // if starting null value, we will host
+                    start = (ClickopediaApplication.top1000[idx]);
                     mfr.child("start").setValue(start); // means we are host
 
-                    idx = r.nextInt(ClickopediaApplication.top5000.length); // if starting null value, we will host
-                    finish = (ClickopediaApplication.top5000[idx]);
+                    idx = r.nextInt(ClickopediaApplication.top1000.length); // if starting null value, we will host
+                    finish = (ClickopediaApplication.top1000[idx]);
                     mfr.child("finish").setValue(finish); // means we are host
                 } else { // if we're not the host, this is all we have to do
                     host = false;
@@ -123,6 +123,8 @@ public class LobbyActivity extends Activity {
         Intent transition = new Intent(LobbyActivity.this, GameActivity.class);
         transition.putExtra("start", start);
         transition.putExtra("finish", finish);
+        mfr.removeEventListener(FirebaseListener);
         startActivity(transition);
+        finish();
     }
 }
