@@ -4,8 +4,6 @@
     <string name="app_name">Clickopedia</string>
     <string name="intro">Clickopedia lets you race a friend through wikipedia</string>
     <string name="start">Click me to look for a challenger</string>
-    <string name="restart">Return to the start</string>
-    <string name="title_activity_ending">EndingActivity</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="restart">BACK HOME</string>
 
 </resources>

@@ -49,16 +49,15 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
         setContentView(R.layout.activity_game);
 
         score = -1;
-        clickView = (TextView) findViewById(R.id.score_view);
+        clickView = (TextView) findViewById(R.id.clicks);
 
         final String start = getIntent().getStringExtra("start");
         finish = getIntent().getStringExtra("finish");
 
-        TextView startingSite = (TextView) findViewById(R.id.starting);
-        startingSite.setText("Starting page: " + start);
-
-        TextView finishingSite = (TextView) findViewById(R.id.finishing);
-        finishingSite.setText("Finishing page: " + finish);
+        TextView startText = (TextView) findViewById(R.id.startText);
+        TextView finishText = (TextView) findViewById(R.id.finishText);
+        startText.setText("Start\n" + start);
+        finishText.setText("Finish\n" + finish);
 
         webView = (WebView) findViewById(R.id.web_view);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -172,7 +171,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
     @Override
     public boolean handleMessage(Message msg) {
         if (msg.what == CLICK_ON_URL) {
-            clickView.setText("Clicks so far: " + score); //update number of clicks
+            clickView.setText(String.valueOf(score)); //update number of clicks
             handler.removeMessages(CLICK_ON_WEBVIEW); //remove normal screen clicks
             //Toast.makeText(this, "Url " + lastUrl, Toast.LENGTH_SHORT).show(); //display url
 
