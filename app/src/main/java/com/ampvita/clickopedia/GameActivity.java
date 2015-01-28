@@ -1,14 +1,21 @@
 package com.ampvita.clickopedia;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.client.DataSnapshot;
@@ -34,6 +41,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
     String finish;
 
     boolean winner = false;
+    Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +72,39 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
             public void onDataChange(DataSnapshot snapshot) {
                 if (snapshot.getValue() == null) { return; }
                 if (winner) { mfr.child(finish).removeValue(); }
-                Intent transition = new Intent(GameActivity.this, FinishActivity.class);
-                transition.putExtra("score", score);
-                transition.putExtra("otherScore", snapshot.getValue().toString());
-                transition.putExtra("winner", winner);
-                startActivity(transition);
+
+                // custom dialog
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.custom_finish);
+                if (winner) {
+                    dialog.setTitle("You win!");
+                } else {
+                    dialog.setTitle("You lose!");
+                }
+
+                // set the custom dialog components - text, image and button
+                TextView text1 = (TextView) dialog.findViewById(R.id.text1);
+                text1.setText("Your score: " + score);
+                TextView text2 = (TextView) dialog.findViewById(R.id.text2);
+                text2.setText("Their score: " + snapshot.getValue().toString());
+
+                ImageView pic1 = (ImageView) dialog.findViewById(R.id.pic1);
+                pic1.setImageResource(R.drawable.ic_launcher);
+                ImageView pic2 = (ImageView) dialog.findViewById(R.id.pic2);
+                pic2.setImageResource(R.drawable.ic_launcher);
+
+                Button dialogButton = (Button) dialog.findViewById(R.id.restart);
+                // if button is clicked, close the custom dialog
+                dialogButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(GameActivity.this, LobbyActivity.class));
+                        finish();
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
             }
 
             @Override
