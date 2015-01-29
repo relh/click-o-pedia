@@ -1,14 +1,19 @@
 package com.ampvita.clickopedia;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -52,8 +57,8 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
 
         TextView startText = (TextView) findViewById(R.id.startText);
         TextView finishText = (TextView) findViewById(R.id.finishText);
-        startText.setText("Start\n" + start);
-        finishText.setText("Finish\n" + finish);
+        startText.setText(Html.fromHtml("<small>Start</small><br /><br />" + "<b>" + start + "</b>"));
+        finishText.setText(Html.fromHtml("<small>Finish</small><br /><br />" + "<b>" + finish + "</b>"));
 
         webView = (WebView) findViewById(R.id.web_view);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -68,38 +73,50 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
                 if (snapshot.getValue() == null) { return; }
                 if (winner) { mfr.child(finish).removeValue(); }
 
-                // custom dialog
-                final Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.custom_finish);
+                AlertDialog.Builder builder;
+                AlertDialog alertDialog;
+
+                Context mContext = GameActivity.this;
+                LayoutInflater inflater = (LayoutInflater)
+                        mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
+                View layout = inflater.inflate(R.layout.custom_finish,
+                        (ViewGroup) findViewById(R.id.root));
+
+                TextView popUpTitle = (TextView) layout.findViewById(R.id.popupTitle);
+                TextView text1 = (TextView) layout.findViewById(R.id.text1);
+                TextView text2 = (TextView) layout.findViewById(R.id.text2);
+                ImageView pic1 = (ImageView) layout.findViewById(R.id.pic1);
+                ImageView pic2 = (ImageView) layout.findViewById(R.id.pic2);
+                pic1.setImageResource(R.drawable.portrait);
+
                 if (winner) {
-                    dialog.setTitle("You win!");
+                   popUpTitle.setText("You win!");
+                   text1.setText("Your score: " + score);
+                   text2.setText("You're the best :)");
+                   text2.setGravity(Gravity.CENTER);
+
                 } else {
-                    dialog.setTitle("You lose!");
+                   popUpTitle.setText("You lose.");
+                   text1.setText("Your score: " + score);
+                   text2.setText("Their score: " + snapshot.getValue().toString());
+                   pic2.setImageResource(R.drawable.portrait);
                 }
 
-                // set the custom dialog components - text, image and button
-                TextView text1 = (TextView) dialog.findViewById(R.id.text1);
-                text1.setText("Your score: " + score);
-                TextView text2 = (TextView) dialog.findViewById(R.id.text2);
-                text2.setText("Their score: " + snapshot.getValue().toString());
-
-                ImageView pic1 = (ImageView) dialog.findViewById(R.id.pic1);
-                pic1.setImageResource(R.drawable.ic_launcher);
-                ImageView pic2 = (ImageView) dialog.findViewById(R.id.pic2);
-                pic2.setImageResource(R.drawable.ic_launcher);
-
-                Button dialogButton = (Button) dialog.findViewById(R.id.restart);
+                Button dialogButton = (Button) layout.findViewById(R.id.restart);
                 // if button is clicked, close the custom dialog
                 dialogButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(new Intent(GameActivity.this, LobbyActivity.class));
                         finish();
-                        dialog.dismiss();
                     }
                 });
 
-                dialog.show();
+                builder = new AlertDialog.Builder(mContext);
+                builder.setView(layout);
+                alertDialog = builder.create();
+                alertDialog.show();
+
             }
 
             @Override

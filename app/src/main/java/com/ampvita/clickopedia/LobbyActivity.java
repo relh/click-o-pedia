@@ -3,6 +3,7 @@ package com.ampvita.clickopedia;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,7 +16,7 @@ import com.firebase.client.ValueEventListener;
 import java.util.Random;
 
 
-public class LobbyActivity extends Activity {
+public class LobbyActivity extends ActionBarActivity {
     Firebase mfr;
     ImageView splash;
 
@@ -99,8 +100,6 @@ public class LobbyActivity extends Activity {
         r = new Random();
         mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
 
-        splash = (ImageView) findViewById(R.id.splash);
-        splash.setImageResource(R.drawable.wikipedia_splash);
 
         final Button start = (Button) findViewById(R.id.start);
         start.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +108,7 @@ public class LobbyActivity extends Activity {
                 mfr.child("start").addValueEventListener(FirebaseListener);
                 mfr.child("finish").addValueEventListener(FirebaseListener);
 
-                start.setText("Waiting...");
+                start.setText("Waiting for another player...");
             }
         });
     }

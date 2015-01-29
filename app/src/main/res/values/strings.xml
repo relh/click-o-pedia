@@ -2,7 +2,11 @@
 <resources>
 
     <string name="app_name">Clickopedia</string>
-    <string name="intro">Clickopedia lets you race a friend through wikipedia</string>
+    <string name="intro">Clickopedia lets you race from one wikipedia page to another by clicking on wiki links.\n\n
+        There will be two modes:\n\n
+        <b>Sprint</b> (time): be the first to get to the destination\n\n
+        <b>Normal</b> (clicks): be strategic and minimize your clicks to the destination\n\n
+        Currently only sprint is active.</string>
     <string name="start">Click me to look for a challenger</string>
     <string name="restart">BACK HOME</string>
 

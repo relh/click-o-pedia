@@ -1,8 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/root">
 
+    <TextView
+        android:id="@+id/popupTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@android:color/darker_gray"/>
     <RelativeLayout
         android:id="@+id/firstPlayer"
         android:layout_width="fill_parent"
@@ -17,14 +24,14 @@
             android:id="@+id/text1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/darker_gray"
             android:layout_toEndOf="@id/pic1"/>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/secondPlayer"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:layout_below="@id/firstPlayer" >
+        android:layout_weight="1" >
     <ImageView
         android:id="@+id/pic2"
         android:layout_width="wrap_content"
@@ -34,6 +41,7 @@
         android:id="@+id/text2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
         android:layout_toEndOf="@id/pic2"/>
     </RelativeLayout>
     <Button
@@ -42,6 +50,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background
-        android:layout_below="@id/secondPlayer" />
+        android:textColor="@color/white"
+        android:background="@color/blue"
+        android:padding="0dp" />
 </LinearLayout>
