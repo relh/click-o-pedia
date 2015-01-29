@@ -5,11 +5,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,12 +27,7 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 
-public class GameActivity extends Activity implements View.OnTouchListener, Handler.Callback {
-
-    private static final int CLICK_ON_WEBVIEW = 1;
-    private static final int CLICK_ON_URL = 2;
-
-    private final Handler handler = new Handler(this);
+public class GameActivity extends Activity {
 
     private TextView clickView;
     private int score;
@@ -38,11 +35,9 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
     private WebView webView;
     private WebViewClient client;
 
-    String lastUrl;
     String finish;
 
     boolean winner = false;
-    Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +46,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
 
         score = -1;
         clickView = (TextView) findViewById(R.id.clicks);
+        clickView.setText(String.valueOf(score));
 
         final String start = getIntent().getStringExtra("start");
         finish = getIntent().getStringExtra("finish");
@@ -62,7 +58,7 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
 
         webView = (WebView) findViewById(R.id.web_view);
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.setOnTouchListener(this);
+        //webView.setOnTouchListener(this);
 
         final Firebase mfr = ((ClickopediaApplication) getApplication()).myFirebaseRef;
         // can't remove old value event listeners
@@ -127,22 +123,25 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
 
         client = new WebViewClient(){
             @Override public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                lastUrl = url;
-                handler.sendEmptyMessage(CLICK_ON_URL);
+                if (Uri.parse(url).getHost().contains("wikipedia.org")) {
+                    clickView.setText(String.valueOf(score)); //update number of clicks
+                    score++;
+                    webView.loadUrl(url); //load webpage
+                    System.out.println("Found a wiki url: " + Uri.parse(url));
+                }
                 return false;
             }
 
             @Override
             public void onPageFinished(WebView view, String url)
             {
+                System.out.println("I should get this next to load: " + Uri.parse(url));
                 String[] urlParts = url.split("/");
-                System.out.println("url on page finished: " + urlParts[urlParts.length-1]);
-                System.out.println("finish string: " + finish);
-
                 if (urlParts[urlParts.length-1].equals(finish)) {
                     winner = true;
                     mfr.child(finish).setValue(score); // means we are host
                 }
+
                 webView.loadUrl("javascript:(function() { " +
                         "var elements = document.getElementsByClassName('header'); " +
                         "elements[0].style.display= 'none'; " +
@@ -163,6 +162,8 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
                         "var elements = document.getElementsByClassName('footer'); " +
                         "elements[0].style.display= 'none'; " +
                         "})()");
+
+                System.out.println("finished loading: " + Uri.parse(url));
             }
         };
 
@@ -174,33 +175,17 @@ public class GameActivity extends Activity implements View.OnTouchListener, Hand
     } //https://torid-heat-2250.firebaseio.com/#-Jfwrmwo4Ri96iuFF6KO|b68b468e76632928959f64f2772ba463
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        if (v.getId() == R.id.web_view && event.getAction() == MotionEvent.ACTION_DOWN){
-            handler.sendEmptyMessageDelayed(CLICK_ON_WEBVIEW, 500);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean handleMessage(Message msg) {
-        if (msg.what == CLICK_ON_URL) {
-            clickView.setText(String.valueOf(score)); //update number of clicks
-            handler.removeMessages(CLICK_ON_WEBVIEW); //remove normal screen clicks
-            //Toast.makeText(this, "Url " + lastUrl, Toast.LENGTH_SHORT).show(); //display url
-
-            //check for webpage being a wikipage
-            if (lastUrl.toLowerCase().contains("wikipedia")) {
-                score++;
-                webView.loadUrl(lastUrl); //load webpage
-            }
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Check if the key event was the Back button and if there's history
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && webView.canGoBack()) {
+            webView.goBack();
             return true;
         }
-        if (msg.what == CLICK_ON_WEBVIEW) {
-            //Toast.makeText(this, "WebView clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return false;
+        // If it wasn't the Back key or there's no web page history, bubble up to the default
+        // system behavior (probably exit the activity)
+        return super.onKeyDown(keyCode, event);
     }
+
 }
 
 //SharedPreferences prefs;
