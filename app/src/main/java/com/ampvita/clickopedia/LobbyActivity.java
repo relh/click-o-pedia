@@ -54,13 +54,13 @@ public class LobbyActivity extends ActionBarActivity {
                 unsure = false;
                 if (snapshot.getValue() == null) { host = true;
                     int idx = r.nextInt(ClickopediaApplication.top1000.length); // if starting null value, we will host
-                    //start = (ClickopediaApplication.top1000[idx]);
-                    start = "Barack_Obama";
+                    start = (ClickopediaApplication.top1000[idx]);
+                    //start = "Barack_Obama";
                     mfr.child("start").setValue(start); // means we are host
 
                     idx = r.nextInt(ClickopediaApplication.top1000.length); // if starting null value, we will host
-                    //finish = (ClickopediaApplication.top1000[idx]);
-                    finish = "Incumbent";
+                    finish = (ClickopediaApplication.top1000[idx]);
+                    //finish = "Incumbent";
                     mfr.child("finish").setValue(finish); // means we are host
                 } else { // if we're not the host, this is all we have to do
                     host = false;
